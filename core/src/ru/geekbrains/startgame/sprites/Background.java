@@ -1,4 +1,4 @@
-package ru.geekbrains.startgame;
+package ru.geekbrains.startgame.sprites;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

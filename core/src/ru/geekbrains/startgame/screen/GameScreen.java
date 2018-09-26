@@ -8,28 +8,26 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-
-import ru.geekbrains.startgame.base.ActionListener;
-import ru.geekbrains.startgame.sprites.Background;
-import ru.geekbrains.startgame.sprites.ButtonExit;
 import ru.geekbrains.startgame.base.Base2DScreen;
 import ru.geekbrains.startgame.math.Rect;
-import ru.geekbrains.startgame.sprites.ButtonPlay;
+import ru.geekbrains.startgame.sprites.Background;
+import ru.geekbrains.startgame.sprites.Ship;
 import ru.geekbrains.startgame.sprites.Star;
 
-public class MenuScreen extends Base2DScreen implements ActionListener {
-    private static final int STAR_COUNT = 256;
+
+public class GameScreen extends Base2DScreen {
+
+    private static final int STAR_COUNT = 64;
 
     Background background;
     Texture bg;
     TextureAtlas atlas;
 
-    ButtonExit buttonExit;
-    ButtonPlay buttonPlay;
+    Ship ship;
 
     Star[] star;
 
-    public MenuScreen(Game game) {
+    public GameScreen(Game game) {
         super(game);
     }
 
@@ -38,27 +36,36 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         super.show();
         bg = new Texture("bg.jpg");
         background = new Background(new TextureRegion(bg));
-        atlas = new TextureAtlas("menuAtlas.tpack");
-        buttonExit = new ButtonExit(atlas, this);
-        buttonPlay = new ButtonPlay(atlas, this);
+        atlas = new TextureAtlas("mainAtlas.tpack");
+        ship = new Ship(atlas);
         star = new Star[STAR_COUNT];
         for (int i = 0; i < star.length; i++) {
             star[i] = new Star(atlas);
         }
     }
 
-
     @Override
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        checkCollisions();
+        deleteAllDestroyed();
         draw();
     }
 
     public void update(float delta) {
+        ship.update(delta);
         for (int i = 0; i < star.length; i++) {
             star[i].update(delta);
         }
+    }
+
+    public void checkCollisions() {
+
+    }
+
+    public void deleteAllDestroyed() {
+
     }
 
     public void draw() {
@@ -66,23 +73,21 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
+        ship.draw(batch);
         for (int i = 0; i < star.length; i++) {
             star[i].draw(batch);
         }
-        buttonExit.draw(batch);
-        buttonPlay.draw(batch);
         batch.end();
     }
 
-
     @Override
     protected void resize(Rect worldBounds) {
+        super.resize(worldBounds);
         background.resize(worldBounds);
         for (int i = 0; i < star.length; i++) {
             star[i].resize(worldBounds);
         }
-        buttonExit.resize(worldBounds);
-        buttonPlay.resize(worldBounds);
+        ship.resize(worldBounds);
     }
 
     @Override
@@ -94,25 +99,13 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        buttonExit.touchDown(touch, pointer);
-        buttonPlay.touchDown(touch, pointer);
-        return super.touchDown(touch, pointer);
+        ship.touchDown(touch, pointer);
+        return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        buttonExit.touchUp(touch, pointer);
-        buttonPlay.touchUp(touch, pointer);
-        return super.touchUp(touch, pointer);
+        ship.touchUp(touch, pointer);
+        return false;
     }
-
-    @Override
-    public void actionPerformed(Object src) {
-        if (src == buttonExit) {
-            Gdx.app.exit();
-        } else if (src == buttonPlay) {
-            game.setScreen(new GameScreen(game));
-        }
-    }
-
 }
