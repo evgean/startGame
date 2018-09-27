@@ -2,6 +2,7 @@ package ru.geekbrains.startgame.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -10,22 +11,24 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.startgame.base.Base2DScreen;
 import ru.geekbrains.startgame.math.Rect;
+import ru.geekbrains.startgame.pool.BulletPool;
 import ru.geekbrains.startgame.sprites.Background;
-import ru.geekbrains.startgame.sprites.Ship;
+import ru.geekbrains.startgame.sprites.MainShip;
 import ru.geekbrains.startgame.sprites.Star;
 
 
 public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 64;
+    private Music music;
 
     Background background;
     Texture bg;
     TextureAtlas atlas;
-
-    Ship ship;
-
     Star[] star;
+    MainShip mainShip;
+    BulletPool bulletPool;
+
 
     public GameScreen(Game game) {
         super(game);
@@ -37,11 +40,16 @@ public class GameScreen extends Base2DScreen {
         bg = new Texture("bg.jpg");
         background = new Background(new TextureRegion(bg));
         atlas = new TextureAtlas("mainAtlas.tpack");
-        ship = new Ship(atlas);
         star = new Star[STAR_COUNT];
         for (int i = 0; i < star.length; i++) {
             star[i] = new Star(atlas);
         }
+        bulletPool = new BulletPool();
+        mainShip = new MainShip(atlas, bulletPool);
+        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+        music.setLooping(true);
+        music.setVolume(0.1f);
+        music.play();
     }
 
     @Override
@@ -54,10 +62,11 @@ public class GameScreen extends Base2DScreen {
     }
 
     public void update(float delta) {
-        ship.update(delta);
         for (int i = 0; i < star.length; i++) {
             star[i].update(delta);
         }
+        mainShip.update(delta);
+        bulletPool.updateActiveObjects(delta);
     }
 
     public void checkCollisions() {
@@ -65,7 +74,7 @@ public class GameScreen extends Base2DScreen {
     }
 
     public void deleteAllDestroyed() {
-
+        bulletPool.freeAllDestroyedActiveObjects();
     }
 
     public void draw() {
@@ -73,10 +82,11 @@ public class GameScreen extends Base2DScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
-        ship.draw(batch);
         for (int i = 0; i < star.length; i++) {
             star[i].draw(batch);
         }
+        mainShip.draw(batch);
+        bulletPool.drawActiveObjects(batch);
         batch.end();
     }
 
@@ -87,25 +97,39 @@ public class GameScreen extends Base2DScreen {
         for (int i = 0; i < star.length; i++) {
             star[i].resize(worldBounds);
         }
-        ship.resize(worldBounds);
+        mainShip.resize(worldBounds);
     }
 
     @Override
     public void dispose() {
         bg.dispose();
         atlas.dispose();
+        bulletPool.dispose();
         super.dispose();
+        music.dispose();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        mainShip.keyDown(keycode);
+        return super.keyDown(keycode);
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        mainShip.keyUp(keycode);
+        return super.keyUp(keycode);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        ship.touchDown(touch, pointer);
-        return false;
+        mainShip.touchDown(touch, pointer);
+        return super.touchDown(touch, pointer);
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        ship.touchUp(touch, pointer);
-        return false;
+        mainShip.touchUp(touch, pointer);
+        return super.touchUp(touch, pointer);
     }
 }
