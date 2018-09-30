@@ -13,11 +13,12 @@ import ru.geekbrains.startgame.math.MatrixUtils;
 import ru.geekbrains.startgame.math.Rect;
 
 public class Base2DScreen implements Screen, InputProcessor {
+
     protected SpriteBatch batch;
 
     protected Game game;
     private Rect screenBounds; // границы области рисования в пикселях
-    private Rect worldBounds; // граница проэкции мировых координат
+    protected Rect worldBounds; // граница проэкции мировых координат
     private Rect glBounds; // дефолтные границы OpenGl
 
     protected Matrix4 worldToGl;

@@ -93,6 +93,7 @@ public class Rect {
     }
 
     public boolean isOutside(Rect other) {
+        if (other == null) return false;
         return getLeft() > other.getRight() || getRight() < other.getLeft() || getBottom() > other.getTop() || getTop() < other.getBottom();
     }
 

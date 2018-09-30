@@ -2,7 +2,9 @@ package ru.geekbrains.startgame.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -12,23 +14,37 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.startgame.base.Base2DScreen;
 import ru.geekbrains.startgame.math.Rect;
 import ru.geekbrains.startgame.pool.BulletPool;
+import ru.geekbrains.startgame.pool.EnemyPool;
+import ru.geekbrains.startgame.pool.ExplosionPool;
 import ru.geekbrains.startgame.sprites.Background;
+import ru.geekbrains.startgame.sprites.Explosion;
 import ru.geekbrains.startgame.sprites.MainShip;
 import ru.geekbrains.startgame.sprites.Star;
+import ru.geekbrains.startgame.utils.EnemiesEmitter;
 
 
 public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 64;
-    private Music music;
 
     Background background;
     Texture bg;
     TextureAtlas atlas;
+
     Star[] star;
+
     MainShip mainShip;
+
     BulletPool bulletPool;
 
+    Music music;
+    Sound laserSound;
+    Sound bulletSound;
+
+    EnemyPool enemyPool;
+    EnemiesEmitter enemiesEmitter;
+
+    ExplosionPool explosionPool;
 
     public GameScreen(Game game) {
         super(game);
@@ -37,6 +53,11 @@ public class GameScreen extends Base2DScreen {
     @Override
     public void show() {
         super.show();
+        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+        music.setLooping(true);
+        music.play();
+        laserSound = Gdx.audio.newSound(Gdx.files.internal("shotEn.wav"));
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("shot.wav"));
         bg = new Texture("bg.jpg");
         background = new Background(new TextureRegion(bg));
         atlas = new TextureAtlas("mainAtlas.tpack");
@@ -45,11 +66,10 @@ public class GameScreen extends Base2DScreen {
             star[i] = new Star(atlas);
         }
         bulletPool = new BulletPool();
-        mainShip = new MainShip(atlas, bulletPool);
-        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
-        music.setLooping(true);
-        music.setVolume(0.1f);
-        music.play();
+        mainShip = new MainShip(atlas, bulletPool, laserSound);
+        enemyPool = new EnemyPool(bulletPool, bulletSound, mainShip);
+        enemiesEmitter = new EnemiesEmitter(enemyPool, atlas, worldBounds);
+        explosionPool = new ExplosionPool(atlas);
     }
 
     @Override
@@ -67,6 +87,9 @@ public class GameScreen extends Base2DScreen {
         }
         mainShip.update(delta);
         bulletPool.updateActiveObjects(delta);
+        enemyPool.updateActiveObjects(delta);
+        explosionPool.updateActiveObjects(delta);
+        enemiesEmitter.generateEnemies(delta);
     }
 
     public void checkCollisions() {
@@ -75,6 +98,8 @@ public class GameScreen extends Base2DScreen {
 
     public void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
+        enemyPool.freeAllDestroyedActiveObjects();
+        explosionPool.freeAllDestroyedActiveObjects();
     }
 
     public void draw() {
@@ -87,6 +112,8 @@ public class GameScreen extends Base2DScreen {
         }
         mainShip.draw(batch);
         bulletPool.drawActiveObjects(batch);
+        enemyPool.drawActiveObjects(batch);
+        explosionPool.drawActiveObjects(batch);
         batch.end();
     }
 
@@ -105,12 +132,21 @@ public class GameScreen extends Base2DScreen {
         bg.dispose();
         atlas.dispose();
         bulletPool.dispose();
-        super.dispose();
+        enemyPool.dispose();
+        explosionPool.dispose();
         music.dispose();
+        laserSound.dispose();
+        super.dispose();
     }
 
     @Override
     public boolean keyDown(int keycode) {
+        switch (keycode) {
+            case Input.Keys.UP:
+                Explosion explosion = explosionPool.obtain();
+                explosion.set(0.2f, worldBounds.pos);
+                break;
+        }
         mainShip.keyDown(keycode);
         return super.keyDown(keycode);
     }

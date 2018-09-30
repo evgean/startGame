@@ -8,16 +8,17 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-
 import ru.geekbrains.startgame.base.ActionListener;
 import ru.geekbrains.startgame.sprites.Background;
-import ru.geekbrains.startgame.sprites.ButtonExit;
 import ru.geekbrains.startgame.base.Base2DScreen;
 import ru.geekbrains.startgame.math.Rect;
+import ru.geekbrains.startgame.sprites.ButtonExit;
 import ru.geekbrains.startgame.sprites.ButtonPlay;
 import ru.geekbrains.startgame.sprites.Star;
 
+
 public class MenuScreen extends Base2DScreen implements ActionListener {
+
     private static final int STAR_COUNT = 256;
 
     Background background;
@@ -114,5 +115,4 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
             game.setScreen(new GameScreen(game));
         }
     }
-
 }
