@@ -40,6 +40,7 @@ public class GameScreen extends Base2DScreen {
     Music music;
     Sound laserSound;
     Sound bulletSound;
+    Sound explotion;
 
     EnemyPool enemyPool;
     EnemiesEmitter enemiesEmitter;
@@ -58,6 +59,7 @@ public class GameScreen extends Base2DScreen {
         music.play();
         laserSound = Gdx.audio.newSound(Gdx.files.internal("shotEn.wav"));
         bulletSound = Gdx.audio.newSound(Gdx.files.internal("shot.wav"));
+        explotion = Gdx.audio.newSound(Gdx.files.internal("expl.wav"));
         bg = new Texture("bg.jpg");
         background = new Background(new TextureRegion(bg));
         atlas = new TextureAtlas("mainAtlas.tpack");
@@ -69,7 +71,7 @@ public class GameScreen extends Base2DScreen {
         mainShip = new MainShip(atlas, bulletPool, laserSound);
         enemyPool = new EnemyPool(bulletPool, bulletSound, mainShip);
         enemiesEmitter = new EnemiesEmitter(enemyPool, atlas, worldBounds);
-        explosionPool = new ExplosionPool(atlas);
+        explosionPool = new ExplosionPool(atlas, explotion);
     }
 
     @Override
