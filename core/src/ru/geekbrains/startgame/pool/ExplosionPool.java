@@ -10,15 +10,16 @@ import ru.geekbrains.startgame.sprites.Explosion;
 public class ExplosionPool extends SpritesPool<Explosion> {
 
     private final TextureRegion textureRegion;
-    private Sound explSound;
 
-    public ExplosionPool(TextureAtlas atlas, Sound explSound) {
+    private Sound explosionSound;
+
+    public ExplosionPool(TextureAtlas atlas, Sound explosionSound) {
         this.textureRegion = atlas.findRegion("explosion");
-        this.explSound = explSound;
+        this.explosionSound = explosionSound;
     }
 
     @Override
     protected Explosion newObject() {
-        return new Explosion(textureRegion, 9, 9, 74, explSound);
+        return new Explosion(textureRegion, 9, 9, 74, explosionSound);
     }
 }

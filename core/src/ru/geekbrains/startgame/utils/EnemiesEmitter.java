@@ -1,8 +1,10 @@
 package ru.geekbrains.startgame.utils;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.sun.org.apache.regexp.internal.RE;
 
 import ru.geekbrains.startgame.math.Rect;
 import ru.geekbrains.startgame.math.Rnd;
@@ -11,25 +13,25 @@ import ru.geekbrains.startgame.sprites.Enemy;
 
 public class EnemiesEmitter {
 
-    private static float ENEMY_SMALL_HEIGHT = 0.07f;
-    private static float ENEMY_SMALL_BULLET_HEIGHT = 0.02f;
-    private static float ENEMY_SMALL_BULLET_VY = -0.5f;
+    private static float ENEMY_SMALL_HEIGHT = 0.1f;
+    private static float ENEMY_SMALL_BULLET_HEIGHT = 0.01f;
+    private static float ENEMY_SMALL_BULLET_VY = -0.3f;
     private static int ENEMY_SMALL_BULLET_DAMAGE = 1;
-    private static float ENEMY_SMALL_RELOAD_INTERVAL = 1f;
+    private static float ENEMY_SMALL_RELOAD_INTERVAL = 3f;
     private static int ENEMY_SMALL_HP = 1;
 
     private static float ENEMY_MEDIUM_HEIGHT = 0.1f;
     private static float ENEMY_MEDIUM_BULLET_HEIGHT = 0.02f;
     private static float ENEMY_MEDIUM_BULLET_VY = -0.25f;
     private static int ENEMY_MEDIUM_BULLET_DAMAGE = 5;
-    private static float ENEMY_MEDIUM_RELOAD_INTERVAL = 2f;
+    private static float ENEMY_MEDIUM_RELOAD_INTERVAL = 4f;
     private static int ENEMY_MEDIUM_HP = 5;
 
     private static float ENEMY_BIG_HEIGHT = 0.2f;
-    private static float ENEMY_BIG_BULLET_HEIGHT = 0.03f;
+    private static float ENEMY_BIG_BULLET_HEIGHT = 0.04f;
     private static float ENEMY_BIG_BULLET_VY = -0.3f;
     private static int ENEMY_BIG_BULLET_DAMAGE = 10;
-    private static float ENEMY_BIG_RELOAD_INTERVAL = 1f;
+    private static float ENEMY_BIG_RELOAD_INTERVAL = 3f;
     private static int ENEMY_BIG_HP = 10;
 
     private final TextureRegion[] enemySmallRegion;
@@ -54,8 +56,6 @@ public class EnemiesEmitter {
         this.worldBounds = worldBounds;
         TextureRegion textureRegion0 = atlas.findRegion("enemy0");
         this.enemySmallRegion = Regions.split(textureRegion0, 1, 2, 2);
-
-
         TextureRegion textureRegion1 = atlas.findRegion("enemy1");
         this.enemyMediumRegion = Regions.split(textureRegion1, 1, 2, 2);
         TextureRegion textureRegion2 = atlas.findRegion("enemy2");
@@ -80,7 +80,8 @@ public class EnemiesEmitter {
                         ENEMY_SMALL_BULLET_DAMAGE,
                         ENEMY_SMALL_RELOAD_INTERVAL,
                         ENEMY_SMALL_HEIGHT,
-                        ENEMY_SMALL_HP
+                        ENEMY_SMALL_HP,
+                        worldBounds
                 );
             } else if (type < 0.8f) {
                 enemy.set(
@@ -92,7 +93,8 @@ public class EnemiesEmitter {
                         ENEMY_MEDIUM_BULLET_DAMAGE,
                         ENEMY_MEDIUM_RELOAD_INTERVAL,
                         ENEMY_MEDIUM_HEIGHT,
-                        ENEMY_MEDIUM_HP
+                        ENEMY_MEDIUM_HP,
+                        worldBounds
                 );
             } else {
                 enemy.set(
@@ -104,7 +106,8 @@ public class EnemiesEmitter {
                         ENEMY_BIG_BULLET_DAMAGE,
                         ENEMY_BIG_RELOAD_INTERVAL,
                         ENEMY_BIG_HEIGHT,
-                        ENEMY_BIG_HP
+                        ENEMY_BIG_HP,
+                        worldBounds
                 );
             }
             enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
