@@ -2,7 +2,6 @@ package ru.geekbrains.startgame.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.List;
 
+import ru.geekbrains.startgame.base.ActionListener;
 import ru.geekbrains.startgame.base.Base2DScreen;
 import ru.geekbrains.startgame.math.Rect;
 import ru.geekbrains.startgame.pool.BulletPool;
@@ -20,19 +20,20 @@ import ru.geekbrains.startgame.pool.EnemyPool;
 import ru.geekbrains.startgame.pool.ExplosionPool;
 import ru.geekbrains.startgame.sprites.Background;
 import ru.geekbrains.startgame.sprites.Bullet;
+import ru.geekbrains.startgame.sprites.ButtonExit;
+import ru.geekbrains.startgame.sprites.ButtonNewGame;
 import ru.geekbrains.startgame.sprites.Enemy;
-import ru.geekbrains.startgame.sprites.Explosion;
 import ru.geekbrains.startgame.sprites.MainShip;
 import ru.geekbrains.startgame.sprites.MessageGameOver;
 import ru.geekbrains.startgame.sprites.Star;
 import ru.geekbrains.startgame.utils.EnemiesEmitter;
 
 
-public class GameScreen extends Base2DScreen {
+public class GameScreen extends Base2DScreen implements ActionListener {
 
     private static final int STAR_COUNT = 64;
 
-    private enum State { PLAYING, GAME_OVER }
+    private enum State {PLAYING, GAME_OVER}
 
     Background background;
     Texture bg;
@@ -57,6 +58,7 @@ public class GameScreen extends Base2DScreen {
     State state;
 
     MessageGameOver messageGameOver;
+    ButtonNewGame buttonNewGame;
 
     public GameScreen(Game game) {
         super(game);
@@ -84,6 +86,7 @@ public class GameScreen extends Base2DScreen {
         enemyPool = new EnemyPool(bulletPool, explosionPool, bulletSound, mainShip);
         enemiesEmitter = new EnemiesEmitter(enemyPool, atlas, worldBounds);
         messageGameOver = new MessageGameOver(atlas);
+        buttonNewGame = new ButtonNewGame(atlas, this);
         startNewGame();
     }
 
@@ -181,6 +184,7 @@ public class GameScreen extends Base2DScreen {
         explosionPool.drawActiveObjects(batch);
         if (state == State.GAME_OVER) {
             messageGameOver.draw(batch);
+            buttonNewGame.draw(batch);
         }
         batch.end();
     }
@@ -227,14 +231,20 @@ public class GameScreen extends Base2DScreen {
     public boolean touchDown(Vector2 touch, int pointer) {
         if (state == State.PLAYING) {
             mainShip.touchDown(touch, pointer);
+        } else if (state == State.GAME_OVER) {
+            buttonNewGame.touchDown(touch, pointer);
         }
         return super.touchDown(touch, pointer);
+
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         if (state == State.PLAYING) {
             mainShip.touchUp(touch, pointer);
+        } else if (state == State.GAME_OVER) {
+            buttonNewGame.touchDown(touch, pointer);
+            startNewGame();
         }
         return super.touchUp(touch, pointer);
     }
@@ -247,5 +257,10 @@ public class GameScreen extends Base2DScreen {
         bulletPool.freeAllActiveObjects();
         explosionPool.freeAllActiveObjects();
         enemyPool.freeAllActiveObjects();
+    }
+
+    @Override
+    public void actionPerformed(Object src) {
+
     }
 }
