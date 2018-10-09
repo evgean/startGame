@@ -3,7 +3,6 @@ package ru.geekbrains.startgame.pool;
 import com.badlogic.gdx.audio.Sound;
 
 import ru.geekbrains.startgame.base.SpritesPool;
-import ru.geekbrains.startgame.math.Rect;
 import ru.geekbrains.startgame.sprites.Enemy;
 import ru.geekbrains.startgame.sprites.MainShip;
 

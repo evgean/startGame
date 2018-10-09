@@ -1,9 +1,6 @@
 package ru.geekbrains.startgame.sprites;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.startgame.base.ActionListener;
 import ru.geekbrains.startgame.base.ScaledTouchUpButton;
